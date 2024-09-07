@@ -82,6 +82,55 @@ int main(void)
 }
 ```
 
-```
+```text
 fopen() failed: No such file or directory
+```
+
+---
+
+## Rust makes it really easy
+
+```rust
+pub enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+```
+
+```rust
+fn open_nonexistent_file() {
+    match std::fs::File::open("non_existent") {
+        Ok(file) => drop(file),
+        Err(err) => println!("open() failed: {}", err),
+    }
+}
+```
+
+```text
+open() failed: The system cannot find the file specified. (os error 2)
+```
+
+---
+
+## Side-by-side
+
+```C
+int main(void)
+{
+    FILE *f = fopen("non_existent", "r");
+    if (f == NULL) {
+        perror("fopen() failed");
+    } else {
+        fclose(f);
+    }
+}
+```
+
+```rust
+fn open_nonexistent_file() {
+    match std::fs::File::open("non_existent") {
+        Ok(file) => drop(file),
+        Err(err) => println!("open() failed: {}", err),
+    }
+}
 ```
