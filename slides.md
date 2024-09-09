@@ -9,7 +9,7 @@ footer: github.com/marekpsenka/rust-error-handling
 
 <!-- _footer: in/marek-psenka -->
 
-![bg right:33%](me.jpg)
+![bg right:33%](./img/me.jpg)
 
 Marek Pšenka
 
@@ -20,6 +20,8 @@ Marek Pšenka
 
 ---
 
+<!-- paginate: true -->
+
 ```rust
 pub struct CoffeeMachine {
     water_tank_volume: f64,
@@ -27,13 +29,13 @@ pub struct CoffeeMachine {
 }
 
 impl CoffeeMachine {
-    pub fn make_espresso(&self) -> Result<CupOfCoffee, &'static str> {
+    pub fn make_espresso(&self) -> Result<Espresso, String> {
         if self.water_tank_volume < 25.0 {
-            Err("Not enough water in tank")
+            Err("Not enough water in tank".to_string())
         } else if self.available_coffee_beans < 7.0 {
-            Err("Not enough coffee beans")
+            Err("Not enough coffee beans".to_string())
         } else {
-            Ok(CupOfCoffee {})
+            Ok(Espresso {})
         }
     }
 }
@@ -44,16 +46,22 @@ impl CoffeeMachine {
 ```rust
     #[test]
     fn error_returned_when_making_espresso_without_beans() {
-        let machine = CoffeeMachine { water_tank_volume: 300.0, available_coffee_beans: 2.0 };
+        let machine = CoffeeMachine {
+            water_tank_volume: 300.0,
+            available_coffee_beans: 2.0,
+        };
 
         let result = machine.make_espresso();
         assert!(result.is_err());
-        assert_eq!(result, Err("Not enough coffee beans"));
+        assert_eq!(result, Err("Not enough coffee beans".to_string()));
     }
 
     #[test]
     fn espresso_is_made_with_water_and_beans() {
-        let machine = CoffeeMachine { water_tank_volume: 300.0, available_coffee_beans: 7.0 };
+        let machine = CoffeeMachine {
+            water_tank_volume: 300.0,
+            available_coffee_beans: 7.0,
+        };
 
         let result = machine.make_espresso();
         assert!(result.is_ok());
@@ -132,5 +140,55 @@ fn open_nonexistent_file() {
         Ok(file) => drop(file),
         Err(err) => println!("open() failed: {}", err),
     }
+}
+```
+
+---
+
+## Composing to make breakfast
+
+```rust
+pub struct Breakfast {
+    pub espresso: Espresso,
+    pub toast: Toast,
+}
+
+pub fn make_breakfast(coffee_machine: CoffeeMachine) -> Result<Breakfast, String> {
+    match coffee_machine.make_espresso() {
+        Ok(espresso) => Ok(Breakfast {
+            espresso,
+            toast: Toast {},
+        }),
+        Err(coffee_machine_err_str) => Err(format!(
+            "The coffee machine failed to make espresso, {}",
+            coffee_machine_err_str
+        )),
+    }
+}
+```
+
+---
+
+![bg](./img/composition.jpg)
+
+---
+
+## Composability is desirable
+
+Is `String` a desirable error type? It is composable but DIY:
+
+```rust
+        Err(coffee_machine_err_str) => Err(format!(
+            "The coffee machine failed to make espresso, {}",
+            coffee_machine_err_str
+        )),
+```
+
+What about the standard library?
+
+```rust
+pub trait Error: Debug + Display {
+    fn source(&self) -> Option<&(dyn Error + 'static)> { ... }
+    fn provide<'a>(&'a self, request: &mut Request<'a>) { ... }
 }
 ```

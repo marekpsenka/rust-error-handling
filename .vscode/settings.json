@@ -1,0 +1,11 @@
+{
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true
+  },
+  // Change _check_ command to `clippy` to match our linting in CI. This way
+  // the problems will be visible immediately to developers.
+  "rust-analyzer.check.command": "clippy",
+  "rust-analyzer.check.extraArgs": ["--", "-Dwarnings"]
+}
