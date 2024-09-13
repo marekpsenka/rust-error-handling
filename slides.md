@@ -3,6 +3,12 @@ marp: true
 footer: github.com/marekpsenka/rust-error-handling
 ---
 
+<!-- _footer: "" -->
+
+![bg 50%](./img/ferris.svg)
+
+---
+
 # Error Handling in Rust
 
 ---
@@ -342,3 +348,15 @@ Not enough coffee beans
 ---
 
 ![bg 90%](./img/anyhow_vs_thiserror.jpg)
+
+---
+
+## Summary
+
+- Idea of making space for error information in return value is not new
+- Rust makes it easy with `Result<T, E>`
+- Think about composability in error types, is it useful to you?
+- Use `anyhow` as a quick start
+- `anyhow` is mostly suitable for application code
+- If caller needs to match on different causes, use `thiserror`
+- Use `thiserror` in libraries, but you might also consider defining your own type
