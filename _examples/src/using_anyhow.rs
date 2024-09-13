@@ -1,4 +1,4 @@
-use thiserror::Error;
+use anyhow::{anyhow, Context, Result};
 
 pub struct CoffeeMachine {
     water_tank_volume: f64,
@@ -8,20 +8,12 @@ pub struct CoffeeMachine {
 #[derive(PartialEq, Debug)]
 pub struct Espresso {}
 
-#[derive(PartialEq, Debug, Error)]
-pub enum MakeEspressoError {
-    #[error("Not enough water in tank")]
-    NotEnoughWater,
-    #[error("Not enough coffee beans")]
-    NotEnoughBeans,
-}
-
 impl CoffeeMachine {
-    pub fn make_espresso(&self) -> Result<Espresso, MakeEspressoError> {
+    pub fn make_espresso(&self) -> Result<Espresso> {
         if self.water_tank_volume < 25.0 {
-            Err(MakeEspressoError::NotEnoughWater)
+            Err(anyhow!("Not enough water in tank"))
         } else if self.available_coffee_beans < 7.0 {
-            Err(MakeEspressoError::NotEnoughBeans)
+            Err(anyhow!("Not enough coffee beans"))
         } else {
             Ok(Espresso {})
         }
@@ -37,17 +29,13 @@ pub struct Breakfast {
     pub toast: Toast,
 }
 
-#[derive(PartialEq, Debug, Error)]
-pub enum MakeBreakfastError {
-    #[error("Unable to make espresso, {0}")]
-    UnableToMakeEspresso(#[from] MakeEspressoError),
-    #[error("Unable to make toast")]
-    UnableToMakeToast,
-}
+pub fn make_breakfast(coffee_machine: CoffeeMachine) -> Result<Breakfast> {
+    let espresso = coffee_machine
+        .make_espresso()
+        .context("Unable to make espresso")?;
 
-pub fn make_breakfast(coffee_machine: CoffeeMachine) -> Result<Breakfast, MakeBreakfastError> {
     Ok(Breakfast {
-        espresso: coffee_machine.make_espresso()?,
+        espresso,
         toast: Toast {},
     })
 }
@@ -65,7 +53,7 @@ mod tests {
 
         let result = machine.make_espresso();
         assert!(result.is_err());
-        assert_eq!(result, Err(MakeEspressoError::NotEnoughBeans));
+        println!("{result:?}");
     }
 
     #[test]
@@ -77,7 +65,7 @@ mod tests {
 
         let result = machine.make_espresso();
         assert!(result.is_err());
-        assert_eq!(result, Err(MakeEspressoError::NotEnoughWater));
+        println!("{result:?}");
     }
 
     #[test]
@@ -100,13 +88,10 @@ mod tests {
 
         let result = make_breakfast(coffee_machine);
         assert!(result.is_err());
-        assert_eq!(
-            result,
-            Err(MakeBreakfastError::UnableToMakeEspresso(
-                MakeEspressoError::NotEnoughBeans
-            ))
-        );
 
-        println!("{}", result.unwrap_err());
+        let err = result.unwrap_err();
+        for inner in err.chain() {
+            println!("{inner}");
+        }
     }
 }
