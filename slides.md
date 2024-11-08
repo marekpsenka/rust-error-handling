@@ -165,6 +165,27 @@ fn open_nonexistent_file() {
 
 ---
 
+## Jiná strategie - výjimky v C\#
+
+![logo](img/edhouse_logo.jpg)
+
+```C#
+public static System.IO.FileStream Open (string path, System.IO.FileMode mode);
+```
+
+Kde se dozvím jak vypadá chyba? __V dokumentaci__:
+> ArgumentNullException
+> PathTooLongException
+> (...)
+
+Rust je explicitní. Dozvím se to __v kódu__:
+
+```rust
+pub fn open<P: AsRef<Path>>(path: P) -> std::Result<T, std::io::Error>;
+```
+
+---
+
 ![logo](img/edhouse_logo.jpg)
 
 ## Shrnutí
