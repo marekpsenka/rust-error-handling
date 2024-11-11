@@ -1,2 +1,4 @@
 _examples/target
 _examples/Cargo.lock
+_examples_cs/bin
+_examples_cs/obj

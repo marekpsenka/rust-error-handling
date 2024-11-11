@@ -165,7 +165,7 @@ fn open_nonexistent_file() {
 
 ---
 
-## Jiná strategie - výjimky v C\#
+## Jiná strategie - výjimky v C\# - nejsou vidět
 
 ![logo](img/edhouse_logo.jpg)
 
@@ -182,6 +182,55 @@ Rust je explicitní. Dozvím se to __v kódu__:
 
 ```rust
 pub fn open<P: AsRef<Path>>(path: P) -> std::Result<T, std::io::Error>;
+```
+
+---
+
+## Vyjímky střílí
+
+![logo](img/edhouse_logo.jpg)
+
+```C#
+void OpenNonexistentFile() {
+    File.Open("non_existent", FileMode.Open);
+}
+
+OpenNonexistentFile();
+
+DoSomethingElse();
+```
+
+```text
+C:\code\rust-error-handling\_examples_cs>dotnet run
+Unhandled exception. System.IO.FileNotFoundException: Could not find file 'non_existent'.
+(...)
+```
+
+---
+
+## Porovnej
+
+![logo](img/edhouse_logo.jpg)
+
+```C#
+void OpenNonexistentFile() {
+    try 
+    {
+        File.Open("non_existent", FileMode.Open);
+    }
+    catch (Exception e) {
+        Console.WriteLine($"{e}");
+    }
+}
+```
+
+```rust
+fn open_nonexistent_file() {
+    match std::fs::File::open("non_existent") {
+        Ok(file) => drop(file),
+        Err(err) => println!("open() failed: {}", err),
+    }
+}
 ```
 
 ---
