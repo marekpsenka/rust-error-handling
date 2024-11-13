@@ -1,6 +1,6 @@
 ---
 marp: true
-footer: github.com/marekpsenka/rust-error-handling
+footer: github.com/marekpsenka/rust-error-handling (branch vut)
 ---
 
 <style>
@@ -18,9 +18,13 @@ img[alt~="logo"] {
 
 ---
 
+<!-- paginate: true -->
+
 <!-- _footer: in/marek-psenka -->
 
-![bg right:33%](./img/me.jpg)
+![logo](img/edhouse_logo.jpg)
+
+![bg left:33%](./img/me.jpg)
 
 ## Marek Pšenka
 
@@ -31,7 +35,47 @@ img[alt~="logo"] {
 
 ---
 
-<!-- paginate: true -->
+## Generátor vodíku H2Gem
+
+- Zařízení pro výrobu zeleného vodíku
+- V Edhouse jsme vyvinuli kompletní firmware
+- Rust nám významně pomohl se spolehlivostí
+
+<style>
+img[alt~="leancat_logo"] {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  width: 250px
+}
+</style>
+
+![leancat_logo](img/leancat_we.png)
+![position:center width:400px](img/we_ui.png)
+
+![bg left:33%](img/gen.jpg)
+
+---
+
+## H2Gem technicky
+
+Řešené úlohy:
+
+- komunikace a řízení zdroje elektrické energie
+- komunikace se senzory a nadřazeným systémem
+- zobrazení a vstupy na/z grafického displeje
+- vše na platformě STM32.
+
+Role Rustu:
+
+- Celé řešení, včetně ovladačů pomocí RTIC
+- žádné runtime chyby v průběhu vývoje a testování
+- rychlejší obrátky na HW ve srovnání s C++
+
+![bg left:33%](img/ui_raw.jpg)
+![logo](img/edhouse_logo.jpg)
+
+---
 
 ![logo](img/edhouse_logo.jpg)
 
@@ -69,17 +113,6 @@ impl CoffeeMachine {
         let result = machine.make_espresso();
         assert!(result.is_err());
         assert_eq!(result, Err("Not enough coffee beans".to_string()));
-    }
-
-    #[test]
-    fn espresso_is_made_with_water_and_beans() {
-        let machine = CoffeeMachine {
-            water_tank_volume: 300.0,
-            available_coffee_beans: 7.0,
-        };
-
-        let result = machine.make_espresso();
-        assert!(result.is_ok());
     }
 ```
 
@@ -239,11 +272,16 @@ fn open_nonexistent_file() {
 
 ## Shrnutí
 
+- Rust nám na zákaznických projektech pomáhá psát spolehlivý kód
 - Myšlenka vyhradit prostor pro chybové informace v návratové hodnotě není nová
 - Rust nám to usnadňuje standardním typem `Result<T, E>`
+- Příklad alternativní strategie jsou výjimky.
+- Nejsou ale vidět a střílí - nutná bdělost
 
 ---
 
 <!-- _footer: "" -->
 
-![bg 50%](./img/ferris.svg)
+![bg width:600px](./img/ferris.svg)
+
+![bg width:400px](./img/qr.png)
