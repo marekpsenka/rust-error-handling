@@ -281,6 +281,7 @@ fn open_nonexistent_file() {
 ---
 
 <!-- _footer: "" -->
+<!-- paginate: false -->
 
 ![bg width:600px](./img/ferris.svg)
 
